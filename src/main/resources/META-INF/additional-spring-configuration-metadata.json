@@ -1,0 +1,13 @@
+{
+  "properties": [
+    {
+      "name": "ui.title",
+      "type": "java.lang.String",
+      "description": "Description for ui.title."
+    },
+    {
+      "name": "spring.ui.title",
+      "type": "java.lang.String",
+      "description": "Description for spring.ui.title."
+    }
+  ] }

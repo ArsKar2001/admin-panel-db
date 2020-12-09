@@ -1,0 +1,29 @@
+* {
+    -fx-font-family: "Segoe UI";
+    -fx-focus-color: transparent;
+}
+
+.label-text {
+    -fx-font-size: 18;
+}
+.button {
+    -fx-font-size: 14;
+    -fx-font-weight: bold;
+}
+.button-menu {
+    -fx-text-fill: #F4F4F4;
+    -fx-background-color: #30D6CE;
+    -fx-min-width: 150;
+    -fx-pref-width: 210;
+    -fx-effect: dropshadow(gaussian, #0088CC, 5, 0.01, 0, 2);
+}
+.button-style1 {
+    -fx-text-fill: #F4F4F4;
+    -fx-background-color:  #FF393A;
+    -fx-min-width: 40;
+    -fx-pref-width: 40;
+    -fx-effect: dropshadow(gaussian, #FF6466, 5, 0.01, 0, 2);
+}
+.button:hover {
+    -fx-opacity: 0.8;
+}
