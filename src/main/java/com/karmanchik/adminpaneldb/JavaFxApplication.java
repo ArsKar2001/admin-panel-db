@@ -24,6 +24,8 @@ public class JavaFxApplication extends Application {
         stage.setScene(new Scene(parent));
         stage.setTitle("Панель управления");
         stage.getIcons().add(new Image("/img/logo.png"));
+        stage.setMinWidth(900);
+        stage.setMinHeight(600);
         stage.show();
     }
 
@@ -37,6 +39,7 @@ public class JavaFxApplication extends Application {
 
     @Override
     public void stop() {
+        Thread.getAllStackTraces().clear();
         this.applicationContext.close();
         Platform.exit();
     }
