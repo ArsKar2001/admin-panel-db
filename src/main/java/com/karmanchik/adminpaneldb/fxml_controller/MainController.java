@@ -8,15 +8,14 @@ import javafx.application.Platform;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.ProgressBar;
+import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.util.List;
 
@@ -36,6 +35,12 @@ public class MainController {
     public ProgressBar progressBarId;
     @FXML
     public MenuItem importClick;
+    @FXML
+    public AnchorPane groupPane;
+    @FXML
+    public AnchorPane userPane;
+    @FXML
+    public ListView<Lesson> listGroup;
 
     public MainController(LessonService lessonService) {
         this.lessonService = lessonService;
@@ -45,10 +50,24 @@ public class MainController {
     public void initialize() {
         progressBarId.setProgress(0);
         importClick.setOnAction(this::clickImport);
+        btnShowListUsers.setOnAction(this::openUserPane);
+        btnShowListGroup.setOnAction(this::openGropPane);
     }
 
+    private void openGropPane(ActionEvent actionEvent) {
+        userPane.setOpacity(0);
+        groupPane.setOpacity(1);
+    }
 
+    private void openUserPane(ActionEvent actionEvent) {
+        userPane.setOpacity(1);
+        groupPane.setOpacity(0);
+    }
 
+    @PostConstruct
+    private void init() {
+
+    }
     private void clickImport(ActionEvent actionEvent) {
         Window window = ((MenuItem) actionEvent.getTarget()).getParentPopup().getOwnerWindow();
         File importFile = showOpenDialogSelectFile(window);
