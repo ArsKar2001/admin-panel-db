@@ -50,6 +50,7 @@ public class ParserDocx {
             log.debug("Собрали новый объект: " + timeTablesGroups.toString());
         } catch (IOException | InvalidFormatException e) {
             log.error(e.getMessage());
+            throw new RuntimeException(e.getMessage());
         }
     }
 
@@ -95,8 +96,10 @@ public class ParserDocx {
             String[] splitLine = line.split("\t");
             try {
                 if (page.get(0).equals(line)) {
+                    String[] split = splitLine[1].split("\\s");
+                    if(split.length == 1) rightListLesson.add("");
+                    else rightListLesson.add(split[1]);
                     leftListLesson.add(splitLine[0].split("\\s")[1]);
-                    rightListLesson.add(splitLine[1].split("\\s")[1]);
                     continue;
                 }
                 leftStringBuilder.append(splitLine[1].trim()).append(";");
@@ -116,6 +119,7 @@ public class ParserDocx {
                 }
             } catch (Exception e) {
                 log.warn(e.getMessage() + " В строке \"" + line + "\"");
+                throw new RuntimeException(e.getMessage() + " В строке \"" + line + "\"");
             }
 
             leftListLesson.add(leftStringBuilder.toString().trim());
@@ -159,6 +163,7 @@ public class ParserDocx {
             timeTablesGroups.remove("");
         } catch (Exception e) {
             log.error(e.getMessage());
+            throw new RuntimeException(e.getMessage());
         }
     }
 }

@@ -1,6 +1,8 @@
 package com.karmanchik.adminpaneldb.task;
 
+import com.karmanchik.adminpaneldb.model.Group;
 import com.karmanchik.adminpaneldb.model.Lesson;
+import com.karmanchik.adminpaneldb.service.GroupService;
 import com.karmanchik.adminpaneldb.service.LessonService;
 import javafx.concurrent.Task;
 import lombok.Setter;
@@ -9,6 +11,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -18,12 +21,19 @@ import java.util.List;
 @Component
 public class ImportData extends Task<List<Lesson>> {
     private HashMap<String, HashMap<Integer, ArrayList<String>>> timeTablesGroups;
-    private LessonService lessonService;
-    private List<Lesson> allLesson;
 
-    public ImportData(LessonService lessonService) {
+    private final LessonService lessonService;
+    private final GroupService groupService;
+
+    private final List<Lesson> allLessons;
+    private final List<Group> allGroups;
+
+
+    public ImportData(LessonService lessonService, GroupService groupService) {
         this.lessonService = lessonService;
-        this.allLesson = this.lessonService.findAll();
+        this.groupService = groupService;
+        this.allGroups = this.groupService.findAll();
+        this.allLessons = this.lessonService.findAll();
     }
 
     @Override
@@ -38,7 +48,7 @@ public class ImportData extends Task<List<Lesson>> {
             if(!isEmptyLesson(importLesson)) {
                 this.lessonService.save(importLesson);
             } else if (isUpdateLesson(importLesson)) {
-                final Lesson lesson = this.lessonService.getLesson(importLesson.getGroup(), importLesson.getNumber(), importLesson.getDay());
+                final Lesson lesson = this.lessonService.getLesson(importLesson.getGroupId(), importLesson.getNumber(), importLesson.getDay());
                 this.lessonService.delete(lesson);
                 this.lessonService.save(importLesson);
             }
@@ -51,13 +61,12 @@ public class ImportData extends Task<List<Lesson>> {
     }
 
     private boolean isUpdateLesson(Lesson importLesson) {
-        return this.lessonService.exists(importLesson.getGroup(), importLesson.getNumber(), importLesson.getDay());
+        return this.lessonService.exists(importLesson.getGroupId(), importLesson.getNumber(), importLesson.getDay());
     }
 
     private boolean isEmptyLesson(Lesson lesson) {
-        List<Lesson> allLesson = this.allLesson;
-        for (Lesson tempLesson : allLesson) {
-            return tempLesson.getGroup().equals(lesson.getGroup()) &&
+        for (Lesson tempLesson : this.allLessons) {
+            return tempLesson.getGroupId().equals(lesson.getGroupId()) &&
                     tempLesson.getDay().equals(lesson.getDay()) &&
                     tempLesson.getNumber().equals(lesson.getNumber()) &&
                     tempLesson.getAudience().equals(lesson.getAudience()) &&
@@ -69,21 +78,42 @@ public class ImportData extends Task<List<Lesson>> {
 
     private List<Lesson> getListLessons(HashMap<String, HashMap<Integer, ArrayList<String>>> hashMap) {
         List<Lesson> lessons = new ArrayList<>();
-        hashMap.forEach((group, integerArrayListHashMap) ->
-                integerArrayListHashMap.forEach((day, strings) ->
-                        strings.forEach(s -> {
-                            String[] split = s.split(";");
-                            if(split.length == 1) {
-                                lessons.add(new Lesson(group, day, split[0]));
-                            } else if(split.length == 3 ) {
-                                lessons.add(new Lesson(group, day, split[0], "-", split[2], split[1]));
-                            } else {
-                                lessons.add(new Lesson(group, day, split[0], split[3], split[2], split[1]));
-                            }
-                        })
-                )
-        );
-        log.debug("Create list: "+lessons.toArray().toString());
+        hashMap.forEach((group, integerArrayListHashMap) -> {
+            int groupId = getGroupId(group);
+            integerArrayListHashMap.forEach((day, strings) ->
+                    strings.forEach(s -> {
+                        String[] split = s.split(";");
+                        if(split.length == 1) {
+                            lessons.add(new Lesson(groupId, day, split[0]));
+                        } else if(split.length == 3 ) {
+                            lessons.add(new Lesson(groupId, day, split[0], "-", split[2], split[1]));
+                        } else {
+                            lessons.add(new Lesson(groupId, day, split[0], split[3], split[2], split[1]));
+                        }
+                    })
+            );
+        });
+        log.debug("Create list: "+ Arrays.toString(lessons.toArray()));
         return lessons;
     }
+
+    private int getGroupId(String group_name) {
+        if(this.allGroups.size() == 0)
+            return getNewGroup(group_name).getId();
+        for (Group group : this.allGroups) {
+            if(group.getGroupName().equals(group_name)) {
+                return group.getId();
+            } else {
+                return getNewGroup(group_name).getId();
+            }
+        }
+        return 0;
+    }
+
+    private Group getNewGroup(String group) {
+        Group newGroup = this.groupService.save(new Group(group));
+        this.allGroups.add(newGroup);
+        return newGroup;
+    }
+
 }

@@ -2,6 +2,7 @@ package com.karmanchik.adminpaneldb.fxml_controller;
 
 import com.karmanchik.adminpaneldb.model.Lesson;
 import com.karmanchik.adminpaneldb.parser.ParserDocx;
+import com.karmanchik.adminpaneldb.service.GroupService;
 import com.karmanchik.adminpaneldb.service.LessonService;
 import com.karmanchik.adminpaneldb.task.ImportData;
 import javafx.application.Platform;
@@ -24,6 +25,7 @@ import java.util.List;
 public class MainController {
     // Spring Boot инъекции
     private final LessonService lessonService;
+    private final GroupService groupService;
     // JavaFX инъекции
     @FXML
     public Button btnShowListUsers;
@@ -42,8 +44,9 @@ public class MainController {
     @FXML
     public ListView<Lesson> listGroup;
 
-    public MainController(LessonService lessonService) {
+    public MainController(LessonService lessonService, GroupService groupService) {
         this.lessonService = lessonService;
+        this.groupService = groupService;
     }
 
     @FXML
@@ -73,9 +76,13 @@ public class MainController {
         File importFile = showOpenDialogSelectFile(window);
         if(importFile != null) {
             ParserDocx parserDocx = new ParserDocx(importFile);
-            parserDocx.parse();
-
-            ImportData data = new ImportData(lessonService);
+            try {
+                parserDocx.parse();
+            } catch (Exception e) {
+                new Alert(Alert.AlertType.WARNING, "Не удалось считать документ. Error: "+e.getMessage()).showAndWait();
+                return;
+            }
+            ImportData data = new ImportData(lessonService, groupService);
             data.setTimeTablesGroups(parserDocx.getTimeTablesGroups());
 
             progressBarId.progressProperty().unbind();
@@ -85,9 +92,8 @@ public class MainController {
             statusLb.textProperty().bind(data.messageProperty());
 
             data.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, workerStateEvent -> {
-                List<Lesson> lessons = data.getValue();
                 statusLb.textProperty().unbind();
-                statusLb.setText("Importing: "+lessons.size());
+                progressBarId.prefHeightProperty().unbind();
             });
 
             new Thread(data).start();

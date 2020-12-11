@@ -9,12 +9,12 @@ public interface LessonService {
 
     void save(Lesson lesson);
 
-    Lesson getLesson(String group, String number, Integer day);
+    Lesson getLesson(@NotNull Integer groupId, @NotNull String number, @NotNull Integer day);
 
-    Iterable<Lesson> findAll(@NotNull String group);
+    List<Lesson> findAll(@NotNull Integer groupId);
     List<Lesson> findAll();
 
     void delete(Lesson temp_lesson);
 
-    boolean exists(@NotNull String group, @NotNull String number, @NotNull Integer day);
+    boolean exists(@NotNull Integer groupId, @NotNull String number, @NotNull Integer day);
 }

@@ -28,13 +28,13 @@ public class LessonServiceImpl implements LessonService {
     }
 
     @Override
-    public Lesson getLesson(String group, String number, Integer day) {
-        return this.lessonRepository.getLessonByGroupAndNumberAndDay(group, number, day).orElse(null);
+    public Lesson getLesson(@NotNull Integer groupId, @NotNull String number, @NotNull Integer day) {
+        return this.lessonRepository.getLessonByGroupIdAndNumberAndDay(groupId, number, day).orElse(null);
     }
 
     @Override
-    public Iterable<Lesson> findAll(@NotNull String group) {
-        return this.lessonRepository.findAllByGroup(group);
+    public List<Lesson> findAll(@NotNull Integer groupId) {
+        return this.lessonRepository.findAllByGroupId(groupId);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class LessonServiceImpl implements LessonService {
     }
 
     @Override
-    public boolean exists(@NotNull String group, @NotNull String number, @NotNull Integer day) {
-        return this.lessonRepository.existsByGroupAndNumberAndDay(group, number, day);
+    public boolean exists(@NotNull Integer groupId, @NotNull String number, @NotNull Integer day) {
+        return this.lessonRepository.existsByGroupIdAndNumberAndDay(groupId, number, day);
     }
 }

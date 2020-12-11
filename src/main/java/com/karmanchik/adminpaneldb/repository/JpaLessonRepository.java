@@ -12,13 +12,13 @@ import java.util.Optional;
 @Repository
 @Transactional(readOnly = true)
 public interface JpaLessonRepository extends JpaRepository<Lesson, Integer> {
-    List<Lesson> findAllByGroup(@NotNull String group);
+    List<Lesson> findAllByGroupId(@NotNull Integer groupId);
     Iterable<Lesson> findAllBy();
 
-    Optional<Lesson> getLessonByGroupAndNumberAndDay(@NotNull String group, @NotNull String number, @NotNull Integer day);
+    Optional<Lesson> getLessonByGroupIdAndNumberAndDay(@NotNull Integer groupId, @NotNull String number, @NotNull Integer day);
 
     boolean existsByDay(@NotNull Integer day);
     boolean existsByNumber(@NotNull String number);
-    boolean existsByGroup(@NotNull String group);
-    boolean existsByGroupAndNumberAndDay(@NotNull String group, @NotNull String number, @NotNull Integer day);
+    boolean existsByGroupId(@NotNull Integer groupId);
+    boolean existsByGroupIdAndNumberAndDay(@NotNull Integer groupId, @NotNull String number, @NotNull Integer day);
 }

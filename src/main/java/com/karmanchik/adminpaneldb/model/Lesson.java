@@ -17,9 +17,9 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Lesson extends AbstractBaseEntity {
-    @Column(name = "group_name")
+    @Column(name = "group_id")
     @NotNull
-    private String group;
+    private Integer groupId;
 
     @Column(name = "day")
     @NotNull
@@ -41,13 +41,13 @@ public class Lesson extends AbstractBaseEntity {
     @NotNull
     private String discipline;
 
-    public Lesson(@NotNull String group, @NotNull Integer day, @NotNull String number) {
-        this.group = group;
+    public Lesson(@NotNull Integer groupId, @NotNull Integer day, @NotNull String number) {
+        this.groupId = groupId;
         this.day = day;
         this.number = number;
-        this.audience = "-";
-        this.discipline = "-";
-        this.teacher = "-";
+        this.audience = "";
+        this.discipline = "";
+        this.teacher = "";
     }
 
 
