@@ -16,7 +16,6 @@ import javafx.stage.Window;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.io.File;
 
 @Component

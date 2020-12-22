@@ -5,7 +5,6 @@ import com.karmanchik.adminpaneldb.model.Lesson;
 import com.karmanchik.adminpaneldb.service.GroupService;
 import com.karmanchik.adminpaneldb.service.LessonService;
 import javafx.concurrent.Task;
-import lombok.Setter;
 import lombok.extern.log4j.Log4j;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
