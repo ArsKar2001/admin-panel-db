@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
-import java.util.List;
 
 @Component
 @FxmlView("main-stage.fxml")
@@ -36,7 +35,9 @@ public class MainController {
     @FXML
     public ProgressBar progressBarId;
     @FXML
-    public MenuItem importClick;
+    public MenuItem importTimetableClick;
+    @FXML
+    public MenuItem importReplacementClick;
     @FXML
     public AnchorPane groupPane;
     @FXML
@@ -52,7 +53,6 @@ public class MainController {
     @FXML
     public void initialize() {
         progressBarId.setProgress(0);
-        importClick.setOnAction(this::clickImport);
         btnShowListUsers.setOnAction(this::openUserPane);
         btnShowListGroup.setOnAction(this::openGropPane);
     }
@@ -71,34 +71,6 @@ public class MainController {
     private void init() {
 
     }
-    private void clickImport(ActionEvent actionEvent) {
-        Window window = ((MenuItem) actionEvent.getTarget()).getParentPopup().getOwnerWindow();
-        File importFile = showOpenDialogSelectFile(window);
-        if(importFile != null) {
-            ParserDocx parserDocx = new ParserDocx(importFile);
-            try {
-                parserDocx.parse();
-            } catch (Exception e) {
-                new Alert(Alert.AlertType.WARNING, "Не удалось считать документ. Error: "+e.getMessage()).showAndWait();
-                return;
-            }
-            ImportData data = new ImportData(lessonService, groupService);
-            data.setTimeTablesGroups(parserDocx.getTimeTablesGroups());
-
-            progressBarId.progressProperty().unbind();
-            progressBarId.progressProperty().bind(data.progressProperty());
-
-            statusLb.textProperty().unbind();
-            statusLb.textProperty().bind(data.messageProperty());
-
-            data.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, workerStateEvent -> {
-                statusLb.textProperty().unbind();
-                progressBarId.prefHeightProperty().unbind();
-            });
-
-            new Thread(data).start();
-        }
-    }
 
     public File showOpenDialogSelectFile(Window window) {
         FileChooser fileChooser = new FileChooser();
@@ -111,5 +83,37 @@ public class MainController {
 
     public void clickExit(ActionEvent actionEvent) {
         Platform.exit();
+    }
+
+    public void importData(ActionEvent actionEvent) {
+        MenuItem item = ((MenuItem) actionEvent.getTarget());
+        Window window = item.getParentPopup().getOwnerWindow();
+        File importFile = showOpenDialogSelectFile(window);
+        if(importFile != null) {
+            ParserDocx parserDocx = new ParserDocx(importFile);
+            try {
+                if(item.getId().equals(importTimetableClick.getId())) {
+                    parserDocx.parseTimetable();
+                } else if(item.getId().equals(importReplacementClick.getId())) {
+                    parserDocx.parserReplacement();
+                }
+                ImportData data = new ImportData(lessonService, groupService);
+                data.setTimeTablesGroups(parserDocx.getTimeTablesGroups());
+
+                progressBarId.progressProperty().unbind();
+                progressBarId.progressProperty().bind(data.progressProperty());
+
+                statusLb.textProperty().unbind();
+                statusLb.textProperty().bind(data.messageProperty());
+
+                data.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, workerStateEvent -> {
+                    statusLb.textProperty().unbind();
+                    progressBarId.prefHeightProperty().unbind();
+                });
+                new Thread(data).start();
+            } catch (Exception e) {
+                new Alert(Alert.AlertType.WARNING, "Не удалось считать документ. Error: " + e.getMessage()).showAndWait();
+            }
+        }
     }
 }

@@ -26,7 +26,8 @@
       <menus>
         <Menu mnemonicParsing="false" text="Menu">
           <items>
-            <MenuItem fx:id="importClick" mnemonicParsing="false" text="Импорт расписания из docx" />
+                  <MenuItem fx:id="importReplacementClick" mnemonicParsing="false" onAction="#importData" text="Импорт замены из docx" />
+            <MenuItem fx:id="importTimetableClick" mnemonicParsing="false" onAction="#importData" text="Импорт расписания из docx" />
             <MenuItem mnemonicParsing="false" onAction="#clickExit" text="Выход" />
           </items>
         </Menu>

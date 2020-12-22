@@ -2,7 +2,6 @@ package com.karmanchik.adminpaneldb.parser;
 
 import lombok.Getter;
 import lombok.extern.log4j.Log4j;
-import org.apache.log4j.Logger;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
@@ -35,20 +34,35 @@ public class ParserDocx {
         this.inputFile = inputFile;
     }
 
-    public void parse() {
-        parserDocxInText_ApachePOI(inputFile);
+    public void parseTimetable() {
+        XWPFWordExtractor extractor = parserDocxInText_ApachePOI(inputFile);
+        onPages(extractor.getText());
+        onDaysTimeTable();
+        log.debug("Собрали новый объект: " + timeTablesGroups.toString());
     }
 
-    private void parserDocxInText_ApachePOI(File f) {
+    public void parserReplacement() {
+        XWPFWordExtractor extractor = parserDocxInText_ApachePOI(inputFile);
+        writeToFile(extractor.getText());
+    }
+
+    public XWPFWordExtractor parserDocxInText_ApachePOI(File f) {
         log.info("[STARTED] " + ParserDocx.class);
         try (FileInputStream stream = new FileInputStream(f)) {
             XWPFDocument docxFile = new XWPFDocument(OPCPackage.open(stream));
-            XWPFWordExtractor extractor = new XWPFWordExtractor(docxFile);
             log.debug("Считали данные из " + f.getName());
-            onPages(extractor.getText());
-            onDaysTimeTable();
-            log.debug("Собрали новый объект: " + timeTablesGroups.toString());
+            return new XWPFWordExtractor(docxFile);
         } catch (IOException | InvalidFormatException e) {
+            log.error(e.getMessage());
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    public void writeToFile(String str) {
+        String fileName = "src/main/resources/files/docx/замена.txt";
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+            writer.write(str);
+        } catch (IOException e) {
             log.error(e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
