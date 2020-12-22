@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.karmanchik</groupId>
     <artifactId>admin-panel-db</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.1-SNAPSHOT</version>
     <name>admin-panel-db</name>
     <description>Demo project for Spring Boot</description>
 

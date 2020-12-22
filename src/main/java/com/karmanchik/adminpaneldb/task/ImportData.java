@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 
 @Log4j
-@Setter
 @Scope("prototype")
 @Component
 public class ImportData extends Task<List<Lesson>> {
@@ -116,4 +115,7 @@ public class ImportData extends Task<List<Lesson>> {
         return newGroup;
     }
 
+    public void setTimeTablesGroups(HashMap<String, HashMap<Integer, ArrayList<String>>> timeTablesGroups) {
+        this.timeTablesGroups = timeTablesGroups;
+    }
 }

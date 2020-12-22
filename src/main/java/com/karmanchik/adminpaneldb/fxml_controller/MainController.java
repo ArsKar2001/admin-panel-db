@@ -50,14 +50,7 @@ public class MainController {
         this.groupService = groupService;
     }
 
-    @FXML
-    public void initialize() {
-        progressBarId.setProgress(0);
-        btnShowListUsers.setOnAction(this::openUserPane);
-        btnShowListGroup.setOnAction(this::openGropPane);
-    }
-
-    private void openGropPane(ActionEvent actionEvent) {
+    private void openGroupPane(ActionEvent actionEvent) {
         userPane.setOpacity(0);
         groupPane.setOpacity(1);
     }
@@ -65,11 +58,6 @@ public class MainController {
     private void openUserPane(ActionEvent actionEvent) {
         userPane.setOpacity(1);
         groupPane.setOpacity(0);
-    }
-
-    @PostConstruct
-    private void init() {
-
     }
 
     public File showOpenDialogSelectFile(Window window) {
@@ -86,34 +74,43 @@ public class MainController {
     }
 
     public void importData(ActionEvent actionEvent) {
+        ImportData data = new ImportData(lessonService, groupService);
         MenuItem item = ((MenuItem) actionEvent.getTarget());
         Window window = item.getParentPopup().getOwnerWindow();
         File importFile = showOpenDialogSelectFile(window);
+
         if(importFile != null) {
             ParserDocx parserDocx = new ParserDocx(importFile);
             try {
                 if(item.getId().equals(importTimetableClick.getId())) {
                     parserDocx.parseTimetable();
+                    data.setTimeTablesGroups(parserDocx.getTimeTablesGroups());
+
+                    progressBarId.progressProperty().unbind();
+                    progressBarId.progressProperty().bind(data.progressProperty());
+
+                    statusLb.textProperty().unbind();
+                    statusLb.textProperty().bind(data.messageProperty());
+
+                    data.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, workerStateEvent -> {
+                        statusLb.textProperty().unbind();
+                        progressBarId.prefHeightProperty().unbind();
+                    });
+                    new Thread(data).start();
                 } else if(item.getId().equals(importReplacementClick.getId())) {
                     parserDocx.parserReplacement();
+
                 }
-                ImportData data = new ImportData(lessonService, groupService);
-                data.setTimeTablesGroups(parserDocx.getTimeTablesGroups());
-
-                progressBarId.progressProperty().unbind();
-                progressBarId.progressProperty().bind(data.progressProperty());
-
-                statusLb.textProperty().unbind();
-                statusLb.textProperty().bind(data.messageProperty());
-
-                data.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, workerStateEvent -> {
-                    statusLb.textProperty().unbind();
-                    progressBarId.prefHeightProperty().unbind();
-                });
-                new Thread(data).start();
             } catch (Exception e) {
                 new Alert(Alert.AlertType.WARNING, "Не удалось считать документ. Error: " + e.getMessage()).showAndWait();
             }
         }
+    }
+
+    @FXML
+    public void initialize() {
+        progressBarId.setProgress(0);
+        btnShowListUsers.setOnAction(this::openUserPane);
+        btnShowListGroup.setOnAction(this::openGroupPane);
     }
 }
