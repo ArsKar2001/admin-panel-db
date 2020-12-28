@@ -16,6 +16,7 @@ import org.json.JSONArray;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.util.List;
 
 @Component
 @FxmlView("main-stage.fxml")
@@ -63,7 +64,7 @@ public class MainController {
         return fileChooser.showOpenDialog(window);
     }
 
-    public void clickExit(ActionEvent actionEvent) {
+    public void clickExit() {
         Platform.exit();
     }
 
@@ -89,8 +90,8 @@ public class MainController {
                     data.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, workerStateEvent -> {
                         statusLb.textProperty().unbind();
                         progressBarId.prefHeightProperty().unbind();
-                        progressBarId.setProgress(0);
                         progressBarId.setOpacity(0);
+                        statusLb.setOpacity(0);
                     });
                     new Thread(data).start();
                 }

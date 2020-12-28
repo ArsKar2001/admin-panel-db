@@ -21,21 +21,9 @@ public class Group extends AbstractBaseEntity {
     @Column(name = "group_name", nullable = false, unique = true)
     @NotNull
     private String groupName;
-    @Column(name = "day_of_week")
+    @Column(name = "timetable")
     @NotNull
-    private String dayOfWeek;
-    @Column(name = "discipline")
-    @NotNull
-    private String discipline;
-    @Column(name = "teacher")
-    @NotNull
-    private String teacher;
-    @Column(name = "auditorium")
-    @NotNull
-    private String auditorium;
-    @Column(name = "week_type")
-    @NotNull
-    private String weekType;
+    private String timetable;
 
     public Group(@NotNull String groupName) {
         this.groupName = groupName;

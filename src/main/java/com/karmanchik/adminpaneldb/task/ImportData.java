@@ -29,18 +29,11 @@ public class ImportData extends Task<Integer> {
                 JSONObject object = (JSONObject) o;
                 String group_name = object.getString("group_name");
                 JSONArray timetable = object.getJSONArray("timetable");
-                Group group = groupRepository.getGroupByGroupName(group_name).orElse(groupRepository.save(new Group(group_name)));
-                for (Object o1 : timetable) {
-                    JSONObject object1 = (JSONObject) o1;
 
-                    group.setWeekType(object1.getString("week_type"));
-                    group.setAuditorium(object1.getString("auditorium"));
-                    group.setDayOfWeek(object1.getString("day_of_week"));
-                    group.setDiscipline(object1.getString("discipline"));
-                    group.setTeacher(object1.getString("teacher"));
-
-                    groupRepository.save(group);
-                }
+                Group group = groupRepository.getGroupByGroupName(group_name)
+                        .orElse(groupRepository.save(new Group(group_name)));
+                group.setTimetable(timetable.toString());
+                groupRepository.save(group);
                 i++;
                 updateMessage("Importing to database: "+i+"/"+jsonArray.length());
                 updateProgress(i, jsonArray.length());

@@ -17,16 +17,13 @@ import java.util.List;
 
 @Log4j
 public class WordInJSON {
-    /**
-     * @param file
-     * @return
-     */
     public String wordFileAsText(File file) {
         try {
             FileInputStream stream = new FileInputStream(file);
             XWPFDocument document = new XWPFDocument(OPCPackage.open(stream));
             XWPFWordExtractor extractor = new XWPFWordExtractor(document);
             stream.close();
+            log.debug("Reading data from "+file.getName());
             return extractor.getText();
         } catch (InvalidFormatException | IOException e) {
             throw new RuntimeException();
@@ -87,6 +84,7 @@ public class WordInJSON {
                 group.put("timetable", timetable);
                 allGroups.put(group);
             }
+            log.debug("Create new JSON: "+allGroups.toString());
             return allGroups;
         } catch (Exception e) {
             throw new RuntimeException();
@@ -106,8 +104,6 @@ public class WordInJSON {
                 currentStr2 = new StringBuilder();
                 if (str.equals(splitPage.get(0))) {
                     currentStr1.append(str.split("\\s")[1]);
-                    currentPage.add(currentStr1.toString());
-                    continue;
                 } else {
                     String[] splitStr = str.split(";");
                     if (str.contains("/")) {
@@ -141,8 +137,8 @@ public class WordInJSON {
                     } else {
                         currentStr1.append(str).append(";").append("NONE");
                     }
-                    currentPage.add(currentStr1.toString());
                 }
+                currentPage.add(currentStr1.toString());
             }
             currentPages.add(currentPage);
         }
