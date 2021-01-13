@@ -28,10 +28,12 @@ public class ImportData extends Task<Integer> {
             for (Object o : jsonArray) {
                 JSONObject object = (JSONObject) o;
                 String group_name = object.getString("group_name");
-                JSONArray timetable = object.getJSONArray("timetable");
+                JSONArray data = object.getJSONArray("timetable");
+                JSONObject timetable = new JSONObject();
+                timetable.put("data", data);
 
-                Group group = groupRepository.getGroupByGroupName(group_name)
-                        .orElse(groupRepository.save(new Group(group_name)));
+                Group group = groupRepository.getByGroupName(group_name)
+                        .orElseGet(() -> groupRepository.save(new Group(group_name)));
                 group.setTimetable(timetable.toString());
                 groupRepository.save(group);
                 i++;
@@ -43,11 +45,6 @@ public class ImportData extends Task<Integer> {
             throw new RuntimeException();
         }
     }
-
-    public JSONArray getJsonArray() {
-        return jsonArray;
-    }
-
     public void setJsonArray(JSONArray jsonArray) {
         this.jsonArray = jsonArray;
     }

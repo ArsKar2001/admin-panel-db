@@ -14,16 +14,28 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @Log4j
 public class WordInJSON {
+
+    public static final Map<String, Integer> DAYS_OF_WEEK = Map.of(
+            "Понедельник", 0,
+            "Вторник", 1,
+            "Среда", 2,
+            "Четверг", 3,
+            "Пятница", 4,
+            "Суббота", 5,
+            "Воскресенье", 6
+    );
+
     public String wordFileAsText(File file) {
         try {
             FileInputStream stream = new FileInputStream(file);
             XWPFDocument document = new XWPFDocument(OPCPackage.open(stream));
             XWPFWordExtractor extractor = new XWPFWordExtractor(document);
             stream.close();
-            log.debug("Reading data from "+file.getName());
+            log.debug("Reading data from " + file.getName());
             return extractor.getText();
         } catch (InvalidFormatException | IOException e) {
             throw new RuntimeException();
@@ -73,7 +85,7 @@ public class WordInJSON {
                 for (String s : page) {
                     lesson = new JSONObject();
                     String[] splitStr = s.split(";");
-                    lesson.put("day_of_week", splitStr[0]);
+                    lesson.put("day_of_week", DAYS_OF_WEEK.get(splitStr[0]));
                     lesson.put("lesson_number", splitStr[1]);
                     lesson.put("discipline", splitStr[2]);
                     lesson.put("auditorium", splitStr[3]);
@@ -84,7 +96,7 @@ public class WordInJSON {
                 group.put("timetable", timetable);
                 allGroups.put(group);
             }
-            log.debug("Create new JSON: "+allGroups.toString());
+            log.debug("Create new JSON: " + allGroups.toString());
             return allGroups;
         } catch (Exception e) {
             throw new RuntimeException();

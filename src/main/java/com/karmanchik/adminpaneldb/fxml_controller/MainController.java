@@ -76,6 +76,7 @@ public class MainController {
         File importFile = showOpenDialogSelectFile(window);
         try {
             if (importFile != null) {
+                statusLb.setOpacity(1);
                 progressBarId.setOpacity(1);
                 String text = wordInJSON.wordFileAsText(importFile);
                 JSONArray array = wordInJSON.textToJSON(text);

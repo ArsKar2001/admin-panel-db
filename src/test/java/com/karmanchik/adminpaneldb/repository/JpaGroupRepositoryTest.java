@@ -13,9 +13,4 @@ class JpaGroupRepositoryTest {
         this.groupRepository = groupRepository;
     }
 
-    @Test
-    void testListGroupName() {
-        List<String> groups = groupRepository.getListGroupName();
-        groups.size();
-    }
 }
